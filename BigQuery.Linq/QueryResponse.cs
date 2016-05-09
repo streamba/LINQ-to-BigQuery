@@ -32,6 +32,7 @@ namespace BigQuery.Linq
         private readonly BigQueryContext _context;
         private readonly IRowsParser _rowsParser;
         private readonly bool _isDynamic;
+        private const int RetryCount = 50;
 
         internal QueryResponse(BigQueryContext context, string query, TimeSpan executionTime,
             QueryResponse queryResponse, bool isDynamic, IRowsParser rowsParser)
@@ -106,7 +107,7 @@ namespace BigQuery.Linq
             var request = CreateNextPageRequest(_context, _jobComplete, _jobReference, PageToken, HasNextPage);
 
             var sw = Stopwatch.StartNew();
-            var furtherQueryResponse = await request.ExecuteAsync(token);
+            var furtherQueryResponse = await TryWithRetryCountAsync(request.ExecuteAsync(token), RetryCount);
             sw.Stop();
 
             return new QueryResponse<T>(_context, Query, sw.Elapsed, furtherQueryResponse, _isDynamic, _rowsParser);
@@ -129,5 +130,45 @@ namespace BigQuery.Linq
             furtherRequest.PageToken = pageToken;
             return furtherRequest;
         }
+
+        /// <summary>
+        /// Tries an async action that returns some data a specified number of times,
+        ///  with a constant delay of 10s between each retry.
+        /// </summary>
+        /// <typeparam name="T1"></typeparam>
+        /// <param name="action"></param>
+        /// <param name="retrycount"></param>
+        /// <returns></returns>
+        private async Task<T1> TryWithRetryCountAsync<T1>(Task<T1> action, int retrycount)
+        {
+            const int retrydelay = 10000;
+            var tries = 0;
+            var success = false;
+            var result = default(T1);
+            do
+            {
+                try
+                {
+                    result = await action;
+                    success = true;
+                }
+                catch
+                {
+                    tries++;
+                    if (tries < retrycount)
+                    {
+                        Thread.Sleep(retrydelay);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+            } while (!success && tries < retrycount);
+
+            return result;
+        }
+
     }
 }
