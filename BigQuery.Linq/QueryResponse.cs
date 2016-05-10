@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BigQuery.Linq.Extensions;
 using Google.Apis.Bigquery.v2;
 
 namespace BigQuery.Linq
@@ -106,7 +107,8 @@ namespace BigQuery.Linq
             var request = CreateNextPageRequest(_context, _jobComplete, _jobReference, PageToken, HasNextPage);
 
             var sw = Stopwatch.StartNew();
-            var furtherQueryResponse = await request.ExecuteAsync(token);
+            var furtherQueryResponse = await new Func<Task<GetQueryResultsResponse>>(() => request.ExecuteAsync(token))
+                .TryWithRetryCountAsync();
             sw.Stop();
 
             return new QueryResponse<T>(_context, Query, sw.Elapsed, furtherQueryResponse, _isDynamic, _rowsParser);
