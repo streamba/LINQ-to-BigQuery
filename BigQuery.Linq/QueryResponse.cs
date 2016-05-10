@@ -33,7 +33,6 @@ namespace BigQuery.Linq
         private readonly BigQueryContext _context;
         private readonly IRowsParser _rowsParser;
         private readonly bool _isDynamic;
-        private const int RetryCount = 50;
 
         internal QueryResponse(BigQueryContext context, string query, TimeSpan executionTime,
             QueryResponse queryResponse, bool isDynamic, IRowsParser rowsParser)

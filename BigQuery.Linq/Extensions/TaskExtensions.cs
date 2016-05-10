@@ -9,7 +9,7 @@ namespace BigQuery.Linq.Extensions
     public static class TaskExtensions
     {
 
-        public static async Task<T1> TryWithRetryCountAsync<T1>(this Func<Task<T1>> taskCreator, int retryCount = 10, int retryDelay = 10000)
+        public static async Task<T1> TryWithRetryCountAsync<T1>(this Func<Task<T1>> taskCreator, int retryCount = 50, int retryDelay = 10000)
         {
             var tries = 0;
             var success = false;
