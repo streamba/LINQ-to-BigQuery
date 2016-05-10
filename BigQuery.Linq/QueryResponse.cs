@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BigQuery.Linq.Extensions;
 using Google.Apis.Bigquery.v2;
 
 namespace BigQuery.Linq
@@ -107,7 +108,8 @@ namespace BigQuery.Linq
             var request = CreateNextPageRequest(_context, _jobComplete, _jobReference, PageToken, HasNextPage);
 
             var sw = Stopwatch.StartNew();
-            var furtherQueryResponse = await TryWithRetryCountAsync(request.ExecuteAsync(token), RetryCount);
+            var furtherQueryResponse = await new Func<Task<GetQueryResultsResponse>>(() => request.ExecuteAsync(token))
+                .TryWithRetryCountAsync();
             sw.Stop();
 
             return new QueryResponse<T>(_context, Query, sw.Elapsed, furtherQueryResponse, _isDynamic, _rowsParser);
@@ -130,45 +132,5 @@ namespace BigQuery.Linq
             furtherRequest.PageToken = pageToken;
             return furtherRequest;
         }
-
-        /// <summary>
-        /// Tries an async action that returns some data a specified number of times,
-        ///  with a constant delay of 10s between each retry.
-        /// </summary>
-        /// <typeparam name="T1"></typeparam>
-        /// <param name="action"></param>
-        /// <param name="retrycount"></param>
-        /// <returns></returns>
-        private async Task<T1> TryWithRetryCountAsync<T1>(Task<T1> action, int retrycount)
-        {
-            const int retrydelay = 10000;
-            var tries = 0;
-            var success = false;
-            var result = default(T1);
-            do
-            {
-                try
-                {
-                    result = await action;
-                    success = true;
-                }
-                catch
-                {
-                    tries++;
-                    if (tries < retrycount)
-                    {
-                        Thread.Sleep(retrydelay);
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
-            } while (!success && tries < retrycount);
-
-            return result;
-        }
-
     }
 }
