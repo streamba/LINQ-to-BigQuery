@@ -23,6 +23,7 @@ namespace BigQuery.Linq
         public ulong? TotalRows { get; }
         public TimeSpan ExecutionTime { get; }
         public IList<TableFieldSchema> TableFieldSchemas { get; }
+        public int PageNumber { get; private set; }
 
         // there's only another page if the previous response contained a PageToken 
         // (see https://cloud.google.com/bigquery/docs/data#paging)
@@ -35,29 +36,29 @@ namespace BigQuery.Linq
         private readonly bool _isDynamic;
 
         internal QueryResponse(BigQueryContext context, string query, TimeSpan executionTime,
-            QueryResponse queryResponse, bool isDynamic, IRowsParser rowsParser)
+            QueryResponse queryResponse, bool isDynamic, IRowsParser rowsParser, int pageNumber = 1)
             : this(
                 context, query, executionTime, isDynamic, rowsParser, queryResponse.Rows, queryResponse.Schema,
                 queryResponse.CacheHit, queryResponse.ETag, queryResponse.Kind,
                 queryResponse.PageToken, queryResponse.TotalBytesProcessed, queryResponse.TotalRows,
-                queryResponse.JobComplete, queryResponse.JobReference)
+                queryResponse.JobComplete, queryResponse.JobReference, pageNumber)
         {
         }
 
         private QueryResponse(BigQueryContext context, string query, TimeSpan executionTime,
-            GetQueryResultsResponse queryResponse, bool isDynamic, IRowsParser rowsParser)
+            GetQueryResultsResponse queryResponse, bool isDynamic, IRowsParser rowsParser, int pageNumber)
             : this(
                 context, query, executionTime, isDynamic, rowsParser, queryResponse.Rows, queryResponse.Schema,
                 queryResponse.CacheHit, queryResponse.ETag, queryResponse.Kind,
                 queryResponse.PageToken, queryResponse.TotalBytesProcessed, queryResponse.TotalRows,
-                queryResponse.JobComplete, queryResponse.JobReference)
+                queryResponse.JobComplete, queryResponse.JobReference, pageNumber)
         {
         }
 
         private QueryResponse(BigQueryContext context, string query, TimeSpan executionTime, bool isDynamic,
             IRowsParser rowsParser, IList<TableRow> rows, TableSchema schema, bool? cacheHit, string eTag, string kind,
             string pageToken, long? totalBytesProcessed, ulong? totalRows,
-            bool? jobComplete, JobReference jobReference)
+            bool? jobComplete, JobReference jobReference, int pageNumber)
         {
             _context = context;
             _isDynamic = isDynamic;
@@ -84,6 +85,7 @@ namespace BigQuery.Linq
             PageToken = pageToken;
             TotalBytesProcessed = totalBytesProcessed;
             TotalRows = totalRows;
+            PageNumber = pageNumber;
 
             TotalBytesProcessedFormatted = totalBytesProcessed.ToHumanReadableSize();
 
@@ -99,7 +101,7 @@ namespace BigQuery.Linq
             var furtherQueryResponse = request.Execute();
             sw.Stop();
 
-            return new QueryResponse<T>(_context, Query, sw.Elapsed, furtherQueryResponse, _isDynamic, _rowsParser);
+            return new QueryResponse<T>(_context, Query, sw.Elapsed, furtherQueryResponse, _isDynamic, _rowsParser, PageNumber + 1);
         }
 
         public async Task<QueryResponse<T>> GetNextResponseAsync(CancellationToken token = default(CancellationToken))
@@ -111,7 +113,7 @@ namespace BigQuery.Linq
                 .TryWithRetryCountAsync();
             sw.Stop();
 
-            return new QueryResponse<T>(_context, Query, sw.Elapsed, furtherQueryResponse, _isDynamic, _rowsParser);
+            return new QueryResponse<T>(_context, Query, sw.Elapsed, furtherQueryResponse, _isDynamic, _rowsParser, PageNumber + 1);
         }
         
         private JobsResource.GetQueryResultsRequest CreateNextPageRequest(BigQueryContext context,
