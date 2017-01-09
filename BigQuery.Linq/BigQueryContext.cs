@@ -347,7 +347,7 @@ namespace BigQuery.Linq
                 MaxResults = MaxResults,
                 PreserveNulls = PreserveNulls,
                 TimeoutMs = TimeoutMs,
-                UseQueryCache = UseQueryCache
+                UseQueryCache = UseQueryCache,
             };
             var request = BigQueryService.Jobs.Query(body, ProjectId);
             request.PrettyPrint = false;

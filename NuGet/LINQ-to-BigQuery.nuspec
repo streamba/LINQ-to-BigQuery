@@ -2,10 +2,10 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>LINQ-to-BigQuery</id>
-        <version>0.7.2</version>
+        <version>$version$</version>
         <title>LINQ to BigQuery</title>
-        <authors>neuecc</authors>
-        <owners>neuecc</owners>
+        <authors>neuecc, streamba</authors>
+        <owners>neuecc, streamba</owners>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>LINQ to BigQuery is C# LINQ Provider for Google BigQuery. It also enables Desktop GUI Client with LINQPad and plug-in driver.</description>
         <releaseNotes>
