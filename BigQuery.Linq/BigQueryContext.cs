@@ -354,7 +354,7 @@ namespace BigQuery.Linq
             return request;
         }
 
-        public QueryResponse<T> Run<T>(string query)
+        public IQueryResponse<T> Run<T>(string query)
         {
             var sw = Stopwatch.StartNew();
             var queryResponse = BuildRequest(query, isForceDry: false).Execute();
@@ -382,7 +382,7 @@ namespace BigQuery.Linq
             return response;
         }
 
-        public QueryResponse<T> RunDry<T>(string query)
+        public IQueryResponse<T> RunDry<T>(string query)
         {
             var sw = Stopwatch.StartNew();
             var queryResponse = BuildRequest(query, isForceDry: true).Execute();
@@ -401,7 +401,7 @@ namespace BigQuery.Linq
         /// <summary>
         /// Run query and return Response with dynamic(ExpandoObject/Primitive) rows.
         /// </summary>
-        public QueryResponse<dynamic> Run(string query)
+        public IQueryResponse<dynamic> Run(string query)
         {
             var sw = Stopwatch.StartNew();
             var queryResponse = BuildRequest(query, isForceDry: false).Execute();
@@ -418,7 +418,7 @@ namespace BigQuery.Linq
         /// <summary>
         /// Run query and return Response with dynamic(ExpandoObject/Primitive) rows.
         /// </summary>
-        public async Task<QueryResponse<dynamic>> RunAsync(string query, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IQueryResponse<dynamic>> RunAsync(string query, CancellationToken cancellationToken = default(CancellationToken))
         {
             var sw = Stopwatch.StartNew();
             var queryResponse = await BuildRequest(query, isForceDry: false).ExecuteAsync(cancellationToken).ConfigureAwait(false);
@@ -435,7 +435,7 @@ namespace BigQuery.Linq
         /// <summary>
         /// Dry run and return Response with dynamic(ExpandoObject/Primitive) rows.
         /// </summary>
-        public QueryResponse<dynamic> RunDry(string query)
+        public IQueryResponse<dynamic> RunDry(string query)
         {
             var sw = Stopwatch.StartNew();
             var queryResponse = BuildRequest(query, isForceDry: true).Execute();
