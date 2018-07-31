@@ -91,11 +91,11 @@ namespace BigQuery.Linq
 
         Task<T[]> ToArrayAsync(CancellationToken cancellationToken = default(CancellationToken));
 
-        QueryResponse<T> Run();
+        IQueryResponse<T> Run();
 
-        QueryResponse<T> RunDry();
+        IQueryResponse<T> RunDry();
 
-        Task<QueryResponse<T>> RunAsync(CancellationToken cancellationToken = default(CancellationToken));
+        Task<IQueryResponse<T>> RunAsync(CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>Change query as Subquery.</summary>
         ISubqueryBigQueryable<T> Into();
@@ -180,17 +180,17 @@ namespace BigQuery.Linq
             return await result.ToArrayAsync().ConfigureAwait(false);
         }
 
-        public QueryResponse<T> Run()
+        public IQueryResponse<T> Run()
         {
             return QueryContext.Run<T>(ToString());
         }
 
-        public Task<QueryResponse<T>> RunAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IQueryResponse<T>> RunAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             return QueryContext.RunAsync<T>(ToString(), cancellationToken);
         }
 
-        public QueryResponse<T> RunDry()
+        public IQueryResponse<T> RunDry()
         {
             return QueryContext.RunDry<T>(ToString());
         }

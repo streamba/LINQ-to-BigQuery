@@ -368,7 +368,7 @@ namespace BigQuery.Linq
             return response;
         }
 
-        public async Task<QueryResponse<T>> RunAsync<T>(string query, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IQueryResponse<T>> RunAsync<T>(string query, CancellationToken cancellationToken = default(CancellationToken))
         {
             var sw = Stopwatch.StartNew();
             var queryResponse = await BuildRequest(query, isForceDry: false).ExecuteAsync(cancellationToken).ConfigureAwait(false);

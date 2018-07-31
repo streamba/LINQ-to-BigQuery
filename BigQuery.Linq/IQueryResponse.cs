@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BigQuery.Linq
 {
@@ -12,5 +14,7 @@ namespace BigQuery.Linq
         long? TotalBytesProcessed { get; }
         string TotalBytesProcessedFormatted { get; }
         TimeSpan ExecutionTime { get; }
+        T[] ToArray();
+        Task<T[]> ToArrayAsync(CancellationToken cancellationToken = default(CancellationToken));
     }
 }
