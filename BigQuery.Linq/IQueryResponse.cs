@@ -16,5 +16,7 @@ namespace BigQuery.Linq
         TimeSpan ExecutionTime { get; }
         T[] ToArray();
         Task<T[]> ToArrayAsync(CancellationToken cancellationToken = default(CancellationToken));
+        IQueryResponse<T> GetNextResponse();
+        Task<IQueryResponse<T>> GetNextResponseAsync(CancellationToken token = default(CancellationToken));
     }
 }
