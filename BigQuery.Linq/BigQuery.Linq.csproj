@@ -120,6 +120,7 @@
     <Compile Include="DuplicateNamingStorage.cs" />
     <Compile Include="DeserializerRowsParser.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
+    <Compile Include="IQueryResponse.cs" />
     <Compile Include="IRowsParser.cs" />
     <Compile Include="MetaTableSchema.cs" />
     <Compile Include="Query\BigQueryable.Flatten.cs" />
