@@ -96,7 +96,7 @@ namespace BigQuery.Linq
             _jobReference = jobReference;
         }
 
-        public QueryResponse<T> GetNextResponse()
+        public IQueryResponse<T> GetNextResponse()
         {
             var request = CreateNextPageRequest(_context, _jobComplete, _jobReference, PageToken, HasNextPage);
 
@@ -108,7 +108,7 @@ namespace BigQuery.Linq
                 PageNumber + 1);
         }
 
-        public async Task<QueryResponse<T>> GetNextResponseAsync(CancellationToken token = default(CancellationToken))
+        public async Task<IQueryResponse<T>> GetNextResponseAsync(CancellationToken token = default(CancellationToken))
         {
             var request = CreateNextPageRequest(_context, _jobComplete, _jobReference, PageToken, HasNextPage);
 
@@ -152,7 +152,7 @@ namespace BigQuery.Linq
 
             while (result.HasNextPage)
             {
-                result = result.GetNextResponse();
+                result = (QueryResponse<T>) result.GetNextResponse();
                 rows.AddRange(result.Rows);
             }
 
@@ -172,7 +172,7 @@ namespace BigQuery.Linq
 
             while (result.HasNextPage)
             {
-                result = await result.GetNextResponseAsync(cancellationToken).ConfigureAwait(false);
+                result = (QueryResponse<T>) await result.GetNextResponseAsync(cancellationToken).ConfigureAwait(false);
                 rows.AddRange(result.Rows);
             }
 
