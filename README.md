@@ -1,4 +1,4 @@
-LINQ to BigQuery
+LINQ to BigQuery [![build status](https://ci.appveyor.com/api/projects/status/github/neuecc/linq-to-bigquery)](https://ci.appveyor.com/project/neuecc/linq-to-bigquery)
 ================
 LINQ to BigQuery is C# LINQ Provider for [Google BigQuery](https://cloud.google.com/bigquery/). It also enables Desktop GUI Client with [LINQPad](http://www.linqpad.net) and plug-in driver.
 
@@ -14,7 +14,7 @@ LINQPad Driver can install from LINQ Pad driver gallery.
 "Add connection" -> "View more drivers..." -> clcik "LINQ to BigQuery" - "Download & Enabled driver" link.    
 Note:Configuration's JSON is OAuth2 JSON Generate from GCP Management Page.
 
-LastUpdate, ver 0.7.1(2015-12-06). See [All Release Notes](https://github.com/neuecc/LINQ-to-BigQuery/releases)
+LastUpdate, ver 0.7.2(2016-02-15). See [All Release Notes](https://github.com/neuecc/LINQ-to-BigQuery/releases)
 
 LINQ with LINQPad
 ---
@@ -229,7 +229,7 @@ From<github_timeline>()
   .ThenByDescending(x => x.percentage)
   .Run()  // ↑BigQuery
   .Dump() // ↓LINQ to Objects(and LINQPad)
-  .Rows
+  .ToArray()
   .GroupBy(x => x.language)
   .DumpGroupChart(x => x.yyyymm, x => x.percentage);
 ```
